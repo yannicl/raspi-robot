@@ -1,3 +1,10 @@
 Run the python file and command the robot with joystick hat.
 
-python /home/pi/raspi-robot/v1/pi/joystickRobotControlFramed.py
+sudo chmod 755 robot
+
+Manual start :
+./robot
+
+Automatic start :
+add into file /home/pi/.config/lxsession/LXDE-pi/autostart
+@/home/pi/raspi-robot/v1/pi/robot
