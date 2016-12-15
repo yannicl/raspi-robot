@@ -5,6 +5,7 @@
 # Start robot python main
 ###
 
-python /home/pi/raspi-robot/v1/pi/joystickRobotControlFramed.py &
+#python /home/pi/raspi-robot/v1/pi/joystickRobotControlFramed.py &
+#python /home/pi/raspi-robot/v1/pi/tornado/server.py &
   
 exit 0

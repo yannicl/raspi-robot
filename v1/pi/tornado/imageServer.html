@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>	
+    </head>
+    <body>
+	<div id="target" style="height:10px;width:10px;background:red;position:float;z-index:100"></div>
+	<iframe src="https://yannic.duckdns.org/stream" height="480px" width="640px">
+	</iframe>
+	<a href="javascript:WebSocketTest()">Run WebSocket</a>
+        <div id="messages" style="height:200px;background:black;color:white;"></div>
+	<script type="text/javascript">
+        function WebSocketTest() {
+	    var messageContainer = document.getElementById("messages");
+            if ("WebSocket" in window) {
+                messageContainer.innerHTML = "WebSocket is supported by your Browser!";
+                var ws = new WebSocket("wss://yannic.duckdns.org/robot-ws/imagews");
+                ws.onopen = function() {
+                    setInterval(function(){ws.send("Get red block position")}, 250);
+	            $("iframe").offset({left:0,top:0});
+	            $("iframe").contents().find("img").offset({left:0,top:0});
+                };
+                ws.onmessage = function (evt) { 
+                    var received_msg = $.parseJSON(evt.data);
+		    var x = received_msg.position.x;
+		    var y = received_msg.position.y;
+		    $("#target").offset({left:x+(-5), top:y+(-5)});
+                };
+                ws.onclose = function() { 
+                    messageContainer.innerHTML = "Connection is closed...";
+                };
+            } else {
+                messageContainer.innerHTML = "WebSocket NOT supported by your Browser!";
+            }
+        }
+        </script>
+    </body>
+</html>
