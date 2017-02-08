@@ -144,6 +144,8 @@ while done==False:
         if (abs(axis_x) > 0.125) or (abs(axis_y) > 0.125):
             frame = createFrameSignedSpeeds(leftSpeed(axis_x, axis_y),rightSpeed(axis_x, axis_y))
             #print frame
+			#send frame to log server
+			
             ser.write(frame)
     
         textPrint.printS(screen, "Joystick {}".format(i) )

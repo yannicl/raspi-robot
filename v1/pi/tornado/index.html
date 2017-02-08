@@ -1,31 +1,59 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">	
+<html><head>
+        <meta charset="utf-8">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <a href="javascript:WebSocketTest()">Run WebSocket</a>
-        <div id="messages" style="height:200px;background:black;color:white;"></div>
+	<form>
+		<fieldset>
+			<label for="x">X=</label>
+			<input type="text" id="x">
+			<label for="x">Y=</label>
+			<input type="text" id="y">
+			<label for="theta (rad)">Θ=</label>
+			<input type="text" id="theta">
+		</fieldset>
+	</form>
+	
+	<svg width="300" height="300" style="margin-top:25px">
+	  <rect width="300" height="300" style="fill:rgb(255,255,255);stroke-width:1;stroke:rgb(255,0,0)"></rect>
+	  <rect x="140" y="100" width="120" height="100" style="fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,255,0)"></rect>
+	  <circle id="myRobot" cx="100" cy="100" r="6" style="fill:rgb(255,255,255);stroke-width:1;stroke:rgb(255,0,0)"></circle>
+	  <line id="myRobotDirection" x1="100" y1="100" x2="124" y2="100" style="fill:rgb(255,255,255);stroke-width:1;stroke:rgb(255,0,0)"></line>
+	  Sorry, your browser does not support inline SVG.  
+	</svg>
+	
 	<script type="text/javascript">
-        function WebSocketTest() {
-	    var messageContainer = document.getElementById("messages");
-            if ("WebSocket" in window) {
-                messageContainer.innerHTML = "WebSocket is supported by your Browser!";
-                var ws = new WebSocket("wss://yannic.duckdns.org/robot-ws/websocket?Id=web");
-                ws.onopen = function() {
-                    setInterval(function(){ws.send("Get red block position")}, 5000);
-                };
+        function runWebSocket() {
+			if ("WebSocket" in window) {
+                var ws = new WebSocket("ws://192.168.16.195:8888/raspi-robot/coord");
+                ws.onopen = function() {};
                 ws.onmessage = function (evt) { 
-                    var received_msg = evt.data;
-                    messageContainer.innerHTML = "Message is received..." + received_msg;
-                };
+                    var received_msg = $.parseJSON(evt.data);
+					$("#x").val(received_msg.x);
+					$("#y").val(received_msg.y);
+					$("#theta").val(received_msg.theta);
+					$("#myRobot").attr("cx", received_msg.x);
+					$("#myRobot").attr("cy", received_msg.y);
+					$("#myRobotDirection").attr("x1", received_msg.x);
+					$("#myRobotDirection").attr("y1", received_msg.y);
+					$("#myRobotDirection").attr("x2", (received_msg.x) + (6.0 * Math.cos(received_msg.theta - Math.PI / 2.0)));
+					$("#myRobotDirection").attr("y2", (received_msg.y) + (6.0 * Math.sin(received_msg.theta - Math.PI / 2.0)));
+				};
                 ws.onclose = function() { 
-                    messageContainer.innerHTML = "Connection is closed...";
+                    toastr["error"]("","Connection is closed");
                 };
             } else {
-                messageContainer.innerHTML = "WebSocket NOT supported by your Browser!";
+				toastr["error"]("","WebSocket is not supported by your Browser!");
             }
         }
-        </script>
-    </body>
-</html>
+		
+		$( document ).ready(function() {
+			runWebSocket();
+		});
+    </script>
+    
+
+</body></html>
