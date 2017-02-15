@@ -136,6 +136,7 @@ done = False
 lock = threading.Lock()
 counterLock = threading.Lock()
 start = time.time()
+GLOBAL_START = time.time()
 frameCounter = 0
 pool = []
 
@@ -187,7 +188,7 @@ class ImageProcessor(threading.Thread):
 						self.pt, center, theta = processImage(image, [0, 0])
 						
 					if (self.pt):
-						message = "{:0.2f},{:0.2f},{:0.2f}".format(center[0], center[1], theta)
+						message = "{:0.4f},{:0.2f},{:0.2f},{:0.2f}".format(time.time() - GLOBAL_START, center[0], center[1], theta)
 						print "robot found at " + message
 						self.sock.sendto(message, (UDP_IP, UDP_PORT))
 					
